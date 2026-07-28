@@ -56,19 +56,20 @@ Full list in docs/business_questions.md.
 
 db-sustainability-analytics/
 ├── data/
-│   └── raw/                  
-│                              
-├── db/                     
+│   └── raw/                
+│                             
+├── db/                      
 ├── src/
 │   └── build_db.py          
-│                           
+│                             
 ├── docs/
 │   ├── business_questions.md
 │   └── findings.md
 ├── dashboard/
-│   ├── dashboard.html     
+│   ├── dashboard.html       
 │   └── screenshots/
 └── README.md
+
 
 ## Data Sources
 
