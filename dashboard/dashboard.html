@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deutsche Bahn Sustainability Progress Analytics</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --db-red:#EC0016;
+    --ink:#0a0a0a;
+    --paper:#f7f7f7;
+    --card:#ffffff;
+    --line:#e6e6e6;
+    --muted:#6b6b6b;
+    --good:#0a7a3d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--ink); padding:40px 0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  .frame{
+    max-width:1200px; margin:0 auto; background:var(--paper);
+    border-radius:6px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .topbar{ height:6px; background:var(--db-red); }
+  header{
+    display:flex; align-items:center; gap:20px;
+    padding:28px 40px 20px;
+  }
+  .logo{
+    background:var(--db-red); color:#fff; font-weight:800; font-size:22px;
+    padding:8px 14px; border-radius:3px; letter-spacing:0.5px; line-height:1;
+  }
+  header .titles h1{
+    margin:0; font-size:26px; color:var(--ink); font-weight:700;
+  }
+  header .titles p{
+    margin:4px 0 0; color:var(--muted); font-size:13.5px;
+  }
+
+  .kpis{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+    padding:0 40px 28px;
+  }
+  .kpi{
+    background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:20px; text-align:center;
+  }
+  .kpi .value{ font-size:30px; font-weight:800; color:var(--ink); }
+  .kpi .value.accent{ color:var(--db-red); }
+  .kpi .value.good{ color:var(--good); }
+  .kpi .label{ font-size:12.5px; color:var(--muted); margin-top:4px; }
+
+  .grid{
+    display:grid; grid-template-columns:1.3fr 1fr; gap:20px;
+    padding:0 40px 40px;
+  }
+  .panel{
+    background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:22px;
+  }
+  .panel h2{ margin:0 0 2px; font-size:15px; color:var(--ink); }
+  .panel .desc{ font-size:12px; color:var(--muted); margin-bottom:16px; }
+  .panel.full{ grid-column:1 / -1; }
+  canvas{ max-height:280px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th,td{ text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th{ color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; }
+
+  .note{
+    font-size:12px; color:var(--muted); background:#faf4f4;
+    border-left:3px solid var(--db-red); padding:9px 12px; margin-top:14px;
+    border-radius:0 4px 4px 0;
+  }
+  footer{
+    padding:18px 40px 30px; font-size:11.5px; color:var(--muted);
+    border-top:1px solid var(--line);
+  }
+  footer a{ color:var(--db-red); }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="topbar"></div>
+  <header>
+    <div class="logo">DB</div>
+    <div class="titles">
+      <h1>Deutsche Bahn Sustainability Progress Analytics</h1>
+      <p>Independent analysis of DB's public climate targets vs. actual reported progress — not affiliated with or endorsed by Deutsche Bahn</p>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="value">69.8%</div>
+      <div class="label">Renewable traction power, 2024</div>
+    </div>
+    <div class="kpi">
+      <div class="value accent">10.2 pts</div>
+      <div class="label">Gap remaining to 2030 target</div>
+    </div>
+    <div class="kpi">
+      <div class="value good">1.92 pts/yr</div>
+      <div class="label">Actual pace (2019–2024)</div>
+    </div>
+    <div class="kpi">
+      <div class="value">+19.8 pts</div>
+      <div class="label">Avg. lead over national grid</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Renewable Share of DB Traction Power, 2015–2024</h2>
+      <div class="desc">Dashed line marks the public 80%-by-2030 milestone</div>
+      <canvas id="trendChart"></canvas>
+      <div class="note">The 2017→2018 jump (44% → 57.2%) is unusually large — treat as a step change, not steady growth.</div>
+    </div>
+
+    <div class="panel">
+      <h2>DB vs. Germany's National Grid</h2>
+      <div class="desc">Is DB's progress its own, or just the national trend?</div>
+      <canvas id="benchmarkChart"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>Women in Leadership, 2020–2024</h2>
+      <div class="desc">Steady upward trend, no methodology caveats found</div>
+      <canvas id="womenChart"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>Independent ESG Ratings</h2>
+      <div class="desc">Third-party agency scores, not DB self-reported</div>
+      <table>
+        <tr><th>Agency</th><th>2022</th><th>2023</th><th>2024</th></tr>
+        <tr><td>CDP (climate)</td><td>A</td><td>A-</td><td>A</td></tr>
+        <tr><td>EcoVadis</td><td>68 Gold</td><td>68 Silver</td><td>71 Silver</td></tr>
+        <tr><td>MSCI</td><td>AA</td><td>A</td><td>A</td></tr>
+        <tr><td>ISS ESG</td><td>—</td><td>B-</td><td>—</td></tr>
+      </table>
+      <div class="note">EcoVadis tier dropped Gold→Silver despite a steady/improving score — reflects a 2024 benchmark threshold change, not a decline.</div>
+    </div>
+
+    <div class="panel full">
+      <h2>Summary Finding</h2>
+      <div class="desc">Deutsche Bahn's own reported figures, cross-verified against its 2024 Integrated Report</div>
+      <p style="font-size:13.5px; color:#333; line-height:1.6; margin:0;">
+        Based on Deutsche Bahn's own reported figures, the company appears to be on track to meet its
+        2030 renewable energy target. Between 2019 and 2024, DB's renewable energy share grew by an
+        average of <strong>1.92 percentage points per year</strong> — slightly faster than the
+        <strong>1.7 points per year</strong> needed to close the remaining 10.2-point gap and reach 80%
+        by 2030. DB has also consistently run 17–23 percentage points ahead of Germany's national grid
+        average, indicating this progress reflects DB's own dedicated renewable power purchasing, not
+        simply the national grid getting greener.
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    Data sources: Deutsche Bahn official KPI spreadsheet (kpi.deutschebahn.com), DB 2024 Integrated Report, Macrotrends German national energy statistics.
+    Independent analysis — not affiliated with or endorsed by Deutsche Bahn.
+  </footer>
+</div>
+
+<script>
+const dbRed = '#EC0016';
+const ink = '#0a0a0a';
+const grid = '#eee';
+
+const trendYears = [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024];
+const trendVals  = [42,42,44,57.2,60.2,61.4,62.4,65.4,68,69.8];
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trendYears,
+    datasets: [
+      { label:'Renewable share (%)', data:trendVals, borderColor:dbRed, backgroundColor:dbRed, tension:0.25, pointRadius:4 },
+      { label:'2030 target (80%)', data:trendYears.map(()=>80), borderColor:'#999', borderDash:[6,6], pointRadius:0, borderWidth:1.5 }
+    ]
+  },
+  options: {
+    scales: { y:{min:0,max:100,grid:{color:grid}}, x:{grid:{display:false}} },
+    plugins: { legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}} }
+  }
+});
+
+const benchYears = [2018,2019,2020,2021];
+const dbVals = [57.2,60.2,61.4,62.4];
+const natVals = [35.64,40.58,44.84,39.83];
+
+new Chart(document.getElementById('benchmarkChart'), {
+  type: 'bar',
+  data: {
+    labels: benchYears,
+    datasets: [
+      { label:'DB traction power', data:dbVals, backgroundColor:dbRed },
+      { label:'Germany national grid', data:natVals, backgroundColor:'#c9c9c9' }
+    ]
+  },
+  options: {
+    scales: { y:{min:0,max:80,grid:{color:grid}}, x:{grid:{display:false}} },
+    plugins: { legend:{position:'bottom', labels:{boxWidth:12,font:{size:11}}} }
+  }
+});
+
+const womenYears = [2020,2021,2022,2023,2024];
+const womenVals = [24.4,25.4,27,29.4,31.5];
+
+new Chart(document.getElementById('womenChart'), {
+  type: 'line',
+  data: {
+    labels: womenYears,
+    datasets: [{ label:'Women in leadership (%)', data:womenVals, borderColor:ink, backgroundColor:ink, tension:0.25, pointRadius:4, fill:false }]
+  },
+  options: {
+    scales: { y:{min:0,max:40,grid:{color:grid}}, x:{grid:{display:false}} },
+    plugins: { legend:{display:false} }
+  }
+});
+</script>
+
+</body>
+</html>
