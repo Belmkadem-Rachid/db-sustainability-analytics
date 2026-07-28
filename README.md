@@ -10,8 +10,8 @@ Power BI chart, and a custom HTML dashboard.
 
 ## Dashboard Preview
 
-![Dashboard top — KPIs and trend charts](dashboard/screenshots/dashboard-top.png)
-![Dashboard bottom — leadership trend, ESG ratings, summary](dashboard/screenshots/dashboard-bottom.png)
+![Dashboard bottom — KPIs and trend charts](dashboard/screenshots/dashboard-top.png)
+![Dashboard  top— leadership trend, ESG ratings, summary](dashboard/screenshots/dashboard-bottom.png)
 
 ## Problem Statement
 
