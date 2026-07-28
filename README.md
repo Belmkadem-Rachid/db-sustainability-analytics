@@ -56,17 +56,17 @@ Full list in docs/business_questions.md.
 
 db-sustainability-analytics/
 ├── data/
-│   └── raw/                 Sourced CSVs, each traceable to DB's own
-│                             official spreadsheet or 2024 Integrated Report
-├── db/                      Generated SQLite database (rebuildable)
+│   └── raw/                  
+│                              
+├── db/                     
 ├── src/
-│   └── build_db.py          Loads CSVs into the database, runs the
-│                             gap-to-2030-target calculation
+│   └── build_db.py          
+│                           
 ├── docs/
 │   ├── business_questions.md
 │   └── findings.md
 ├── dashboard/
-│   ├── dashboard.html       Styled, branded dashboard
+│   ├── dashboard.html     
 │   └── screenshots/
 └── README.md
 
